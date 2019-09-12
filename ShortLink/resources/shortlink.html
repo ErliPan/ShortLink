@@ -1,0 +1,84 @@
+<script>
+	api = "ShortLink.php";
+	url = "erpn.tk";
+
+	function shortUrl() {
+		var url = document.getElementById("URL").value;
+		if (url == "") {
+			return;
+		}
+		if (document.getElementById("loading").style.display == "") {
+			return;
+		}
+		document.getElementById("loading").style.display = "";
+		var timer = document.getElementById("timer").value;
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function () {
+			if (xmlhttp.readyState == 4) {
+				if (xmlhttp.status == 200) {
+					document.getElementById("URL").value = this.responseText;
+					document.getElementById("loading").style.display = "none";
+				} else {
+					alert('something else other than 200 was returned' + xmlhttp.status);
+				}
+			}
+		};
+		xmlhttp.open("GET", api + "?new=" + btoa(url) + "&timer=" +
+			timer + "&shortlink_csrf=" + getCookie("shortlink_csrf"), true);
+
+		xmlhttp.send();
+	}
+
+	function getCookie(name) {
+		var value = "; " + document.cookie;
+		var parts = value.split("; " + name + "=");
+		if (parts.length == 2) return parts.pop().split(";").shift();
+	}
+
+	function pixel() {
+		if (document.getElementById("URL").value.startsWith(url + "/")) {
+			document.getElementById("URL").value = "<img src='https://" + document.getElementById("URL").value + "' />";
+		} else {
+			document.getElementById("URL").value =
+				'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
+		}
+	}
+</script>
+<fieldset class="form-group">
+	<label id="labelURL">URL</label>
+	<textarea class="form-control input" id="URL" rows="3" placeholder="example.dev" maxlength="2048"
+		required></textarea>
+	<small class="text-muted" style="color: #fff!important;">
+		Inserisci l'url da accorciare, l'operazione può richiedere fino a 5 secondi.
+	</small>
+</fieldset>
+<div style="height: 25px;"></div>
+<fieldset class="form-group">
+	<label>Durata</label>
+	<select class="form-control input" id="timer" required>
+		<option>6 ore</option>
+		<option>24 ore</option>
+		<option>7 giorni</option>
+		<option>14 giorni</option>
+		<option>5 anni</option>
+	</select>
+	<small class="text-muted" style="color: #fff!important;">
+		Se la durata è più di un anno allora la lunghezza del link sara di 11 caratteri.
+	</small>
+</fieldset>
+<div style="height: 25px;"></div>
+<button class="btn btn-primary" onclick="shortUrl()">
+	<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="loading"
+		style="display: none"></span>
+	Accorcia
+</button>
+<button type="button" onclick="pixel()" class="btn btn-outline-primary">Pixel transparente</button>
+<div style="height: 35px;"></div>
+<a href='ShortLink.php?manage'>
+	<h1>Control panel</h1>
+</a>
+<br />
+<a href='../index.php'>
+	<h1>
+		<< Indietro</h1> </a> <div style="height: 75px;">
+			</div>
